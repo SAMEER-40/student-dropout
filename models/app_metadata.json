@@ -1,0 +1,41 @@
+{
+  "numerical_cols": [
+    "Age",
+    "Gender",
+    "Marital_Status",
+    "Course",
+    "Mother_Qualification",
+    "Father_Qualification",
+    "Previous_Qualification",
+    "Displaced",
+    "Debtor",
+    "Tuition_Fees_Up_To_Date",
+    "Scholarship_Holder",
+    "Unemployment_Rate",
+    "Inflation_Rate",
+    "GDP",
+    "Admission_Grade"
+  ],
+  "categorical_cols": [],
+  "all_cols": [
+    "Age",
+    "Gender",
+    "Marital_Status",
+    "Course",
+    "Mother_Qualification",
+    "Father_Qualification",
+    "Previous_Qualification",
+    "Displaced",
+    "Debtor",
+    "Tuition_Fees_Up_To_Date",
+    "Scholarship_Holder",
+    "Unemployment_Rate",
+    "Inflation_Rate",
+    "GDP",
+    "Admission_Grade"
+  ],
+  "n_features": 15,
+  "categorical_options": {},
+  "feature_info": {},
+  "created_at": "2026-01-03T03:26:39.178355"
+}

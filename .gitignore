@@ -28,7 +28,7 @@ env/
 ENV/
 .venv
 
-# Jupyter Notebook
+# Jupyter Notebook checkpoints
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 
@@ -39,33 +39,30 @@ ENV/
 *.swo
 *~
 
-# Data files (exclude large datasets)
-data/raw/*.csv
-data/raw/*.xlsx
-data/raw/*.zip
-data/processed/*.csv
-*.h5
-*.pkl.z
-
-# Models (optional - uncomment if models are large)
-# models/*.pkl
-# models/*.h5
-# models/*.joblib
+# Node modules (can be reinstalled)
+node_modules/
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Streamlit
+# Streamlit secrets (sensitive)
 .streamlit/secrets.toml
 
 # Logs
 *.log
 
-# Environment variables
+# Environment variables (sensitive)
 .env
 
-# Testing
+# Testing cache
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Temporary files
+*.tmp
+*.bak
+
+# NOTE: Data, models, and processed files ARE INCLUDED
+# so the project can be reproduced by anyone cloning

@@ -1,0 +1,101 @@
+\chapter{System Analysis and Mathematical Modeling}
+
+\section{Introduction}
+The development of a robust predictive system requires a rigorous definition of the problem space, the underlying data structures, and the mathematical framework governing the learning process. This chapter formalizes the Student Dropout Prediction problem using set theory and statistical learning definitions. It also delineates the system architecture, decomposing the complex Monolithic problem into manageable, loosely coupled microservices.
+
+\section{Formal Problem Statement}
+The objective of this work is to construct a predictive system that learns the mapping between a student's profile at time $t$ and their final academic status.
+
+\subsection{Mathematical Formulation}
+Let $S = \{s_1, s_2, ..., s_N\}$ be the set of $N$ students in the dataset, where $N = 4424$ in our specific case. 
+Each student $s_i$ is represented by a feature vector $\mathbf{x}_i \in \mathbb{R}^d$, where $d$ is the dimensionality of the feature space. The feature space $\mathcal{X}$ is composed of three disjoint subsets representing different domains of student life:
+\begin{equation}
+    \mathcal{X} = \mathcal{X}_{demo} \cup \mathcal{X}_{academic} \cup \mathcal{X}_{socio}
+\end{equation}
+
+Where:
+\begin{itemize}
+    \item $\mathcal{X}_{demo} = \{ \text{Age, Gender, Marital Status, Displaced, ...} \}$
+    \item $\mathcal{X}_{academic} = \{ \text{Course, Valid Grades, Enrolled Units, ...} \}$
+    \item $\mathcal{X}_{socio} = \{ \text{GDP, Inflation Rate, Unemployment Rate, ...} \}$
+\end{itemize}
+
+Let $\mathcal{Y} = \{0, 1, 2\}$ be the set of target labels, mapping to $\{\text{Dropout}, \text{Enrolled}, \text{Graduate}\}$ respectively.
+Our goal is to learn a hypothesis function $h_{\theta}(\mathbf{x}): \mathbb{R}^d \rightarrow [0, 1]^{|\mathcal{Y}|}$ parameterized by $\theta$.
+
+For a classification problem with $K=3$ classes, we aim to minimize the Categorical Cross-Entropy Loss function $J(\theta)$, defined as:
+\begin{equation}
+    J(\theta) = -\frac{1}{N} \sum_{i=1}^{N} \sum_{c=0}^{K-1} \mathbb{I}(y_i = c) \log(\hat{y}_{i,c})
+\end{equation}
+where:
+\begin{itemize}
+    \item $\mathbb{I}(\cdot)$ is the indicator function which is 1 if the condition is true, else 0.
+    \item $\hat{y}_{i,c}$ is the predicted probability that student $i$ belongs to class $c$.
+\end{itemize}
+
+\section{Proposed System Architecture}
+In contrast to traditional monolithic scripts often found in academic research, this system employs a modern, distributed systems architecture. The design strictly adheres to the Separation of Concerns (SoC) principle, isolating the Data Processing, Inference, and Presentation layers.
+
+\subsection{Architectural Components}
+The system is composed of four primary subsystems:
+
+\begin{enumerate}
+    \item \textbf{The Data Ingestion & Transformation Layer:}
+    Responsible for the Extract, Transform, Load (ETL) pipeline. It handles raw CSV ingestion, schema validation, and storage of processed artifacts.
+    
+    \item \textbf{The Model Training Pipeline:}
+    An offline subsystem that orchestrates model selection, hyperparameter tuning, and cross-validation. It outputs serialized model artifacts (\texttt{.pkl} files).
+    
+    \item \textbf{The Inference Engine (FastAPI):}
+    A high-performance, asynchronous REST API service. It loads the serialized artifacts into memory at startup (Application State) and serves predictions via HTTP endpoint.
+    \begin{equation}
+        \text{Endpoint}: \texttt{POST /api/predict} \quad \text{Latency Constraint}: < 200\text{ms}
+    \end{equation}
+    
+    \item \textbf{The Presentation Layer (React):}
+    A dynamic Single Page Application (SPA) that renders the user interface. It utilizes a "Schema-Driven UI" pattern, where the form layout is determined by a JSON schema fetched from the backend at runtime.
+\end{enumerate}
+
+\subsection{Data Flow Diagram (DFD)}
+The data flows through the system in the following stages:
+\begin{enumerate}
+    \item \textbf{Input:} User enters data $\mathbf{x}_{raw}$ into the React Frontend.
+    \item \textbf{Transmission:} Data is serialized to JSON and sent via HTTPS POST to the Backend.
+    \item \textbf{Validation:} Backend validates $\mathbf{x}_{raw}$ against Pydantic schema $\Sigma$.
+    \item \textbf{Transformation:} The Preprocessor $P$ transforms $\mathbf{x}_{raw} \rightarrow \mathbf{x}_{norm}$ (Scaling/Encoding).
+    \item \textbf{Inference:} The Model $M$ computes $\hat{y} = M(\mathbf{x}_{norm})$.
+    \item \textbf{Explanation:} (Optional) The SHAP explainer $E$ computes $\phi(\mathbf{x}_{norm})$.
+    \item \textbf{Output:} The prediction $\hat{y}$ and explanation $\phi$ are returned to the User.
+\end{enumerate}
+
+\vspace{1cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/system_architecture.png}
+    \caption{High-Level System Architecture Design}
+    \label{fig:expanded_architecture}
+\end{figure}
+
+\section{Functional Requirements (FRs)}
+The system is designed to meet the following functional specifications:
+\begin{itemize}
+    \item \textbf{FR-01 Data Ingestion:} The system must be able to ingest datasets in CSV format with varying schemas.
+    \item \textbf{FR-02 Preprocessing:} The system must automatically handle missing values and encode categorical variables.
+    \item \textbf{FR-03 Prediction:} The system must output a predicted class label and associated probability vector for any valid input vector.
+    \item \textbf{FR-04 Explanation:} The system must provide a list of the top-$K$ features contributing to the prediction (SHAP values).
+    \item \textbf{FR-05 Consistency Check:} The system must validate that the feature set used for inference matches the training set exactly.
+\end{itemize}
+
+\section{Non-Functional Requirements (NFRs)}
+\begin{itemize}
+    \item \textbf{NFR-01 Performance:} The API response time for a single prediction must not exceed 200ms (95th percentile).
+    \item \textbf{NFR-02 Scatterability:} The backend service must be stateless to allow horizontal scaling via container orchestration (e.g., Kubernetes).
+    \item \textbf{NFR-03 Reliability:} The system must implement robust error handling for invalid inputs, returning HTTP 400 codes with descriptive messages.
+    \item \textbf{NFR-04 Usability:} The User Interface must provide visual cues (color coding) for risk levels (Red for Dropout, Green for Graduate).
+\end{itemize}
+
+\section{Feasibility Analysis}
+\subsection{Technical Feasibility}
+The required technologies (Python, Scikit-learn, React) are open-source, mature, and widely supported. The computational complexity of Random Forest inference is $O(T \cdot \log N)$, where $T$ is the number of trees. Given $T=100$ and sample size $N$, this is negligible for real-time applications.
+\subsection{Economic Feasibility}
+The system implementation utilizes 100\% open-source software, resulting in zero licensing costs. Deployment costs on cloud providers like AWS (t3.medium instance) are estimated at under \$50/month, making it highly economically viable for educational institutions.

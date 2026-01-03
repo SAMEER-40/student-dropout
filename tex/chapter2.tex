@@ -1,0 +1,79 @@
+\chapter{Literature Review}
+
+\section{Overview of Student Retention Analysis}
+Student retention analysis has been a focal point of educational research for decades. Theories such as Tinto’s Student Integration Model (1975) and Bean’s Student Attrition Model (1980) laid the theoretical groundwork, emphasizing the role of academic integration and external environmental factors. In the modern computational era, these theoretical constructs serve as the basis for feature selection in data mining tasks. The transition from theoretical models to data-driven EDM (Educational Data Mining) has enabled institutions to process vast distinct datasets to uncover hidden patterns in student behavior.
+
+\section{Comparative Analysis of Existing Systems}
+A comprehensive survey of existing literature reveals a variety of approaches to the dropout prediction problem. Table \ref{tab:comparison} summarizes key related study technologies, highlighting their methodologies and limitations.
+
+\begin{table}[H]
+\centering
+\caption{Comparative Analysis of Existing Systems}
+\label{tab:comparison}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|p{3cm}|p{3cm}|p{4cm}|p{4cm}|}
+\hline
+\textbf{Author/Year} & \textbf{Methodology} & \textbf{Key Findings} & \textbf{Limitations} \\
+\hline
+\textit{Manrique et al. (2019)} & Logistic Regression & identified high school grades as primary predictor. & Unable to capture non-linear relationships; low accuracy ($\approx$65\%). \\
+\hline
+\textit{Sarker et al. (2020)} & Artificial Neural Networks (ANN) & Achieved high accuracy (85\%) on small datasets. & "Black Box" nature; lack of interpretability made it unusable for faculty intervention. \\
+\hline
+\textit{Nagy et al. (2018)} & Decision Trees (C4.5) & Provided interpretable rule sets (IF-THEN rules). & Prone to overfitting; failed to generalize on unseen data. \\
+\hline
+\textit{Proposed System (2025)} & \textbf{Ensemble (RF/XGB) + SHAP} & \textbf{High accuracy ($\approx$77\%) with granular, instance-level explainability.} & \textbf{Computational overhead of SHAP values.} \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+\section{Machine Learning in Education}
+\subsection{Decision Trees and Random Forests}
+Decision Trees have been widely used due to their inherent interpretability. However, single trees often suffer from high variance. Random Forest, an ensemble bagging method proposed by Breiman (2001), mitigates this by constructing a multitude of decision trees at training time. 
+Mathematically, for an input $x$, the Random Forest prediction $\hat{y}$ is the majority vote of $K$ trees:
+\begin{equation}
+    \hat{y} = \text{mode} \{ T_1(x), T_2(x), ..., T_K(x) \}
+\end{equation}
+In the context of educational data, Random Forests have proven robust against overfitting, particularly when handling datasets with a mix of categorical (e.g., Marital Status) and numerical (e.g., Grade Point Average) features.
+
+\subsection{Gradient Boosting Machines (XGBoost)}
+eXtreme Gradient Boosting (XGBoost) has emerged as a state-of-the-art technique in structured data tabular competitions. Unlike Random Forests which build trees independently, XGBoost builds trees sequentially, where each new tree corrects the errors of the previous ones. The objective function at step $t$ is given by:
+\begin{equation}
+    \mathcal{L}^{(t)} = \sum_{i=1}^{n} l(y_i, \hat{y}_i^{(t-1)} + f_t(x_i)) + \Omega(f_t)
+\end{equation}
+where $l$ is the loss function and $\Omega$ is the regularization term. While highly accurate, XGBoost requires careful hyperparameter tuning to prevent overfitting on smaller educational datasets.
+
+\section{Explainable AI (XAI) in Predictive Modeling}
+The implementation of General Data Protection Regulation (GDPR) and the ethical demand for "Right to Explanation" has necessitated the use of XAI. In educational contexts, telling a student they are "at risk" without explaining \textit{why} is counter-productive.
+
+\subsection{SHAP (SHapley Additive exPlanations)}
+SHAP values, based on cooperative game theory, provide a unified measure of feature importance. For a specific prediction, the SHAP value of feature $j$ is defined as the average marginal contribution of that feature value across all possible coalitions of features.
+\begin{equation}
+    \phi_j(val) = \sum_{S \subseteq \{x_1,...,x_p\} \setminus \{x_j\}} \frac{|S|!(p-|S|-1)!}{p!} (val(S \cup \{x_j\}) - val(S))
+\end{equation}
+This allows our system to output statements such as "Student X is at risk \textit{primarily because} of 'Tuition Fees Up To Date = 0' and 'Scholarship Holder = 0'", enabling precise financial intervention.
+
+\section{Gap Analysis}
+Based on the literature survey, several gaps were identified in current state-of-the-art systems:
+\begin{enumerate}
+    \item \textbf{Lack of Integrated Approach:} Many studies focus solely on model building without developing a deployment mechanism (Web UI) for non-technical stakeholders.
+    \item \textbf{Static Schemas:} Most systems assume a fixed set of features and break if data collection methods change. Our proposed system utilizes a dynamic schema fetching mechanism to adapt to backend changes.
+    \item \textbf{Absence of Explainability:} High-accuracy models in literature (like Deep Learning) often sacrifice interpretability. Our proposed system bridges this gap by combining high-performance Ensembles with SHAP.
+    \item \textbf{Dataset Balance:} Many studies ignore class imbalance, leading to models that favor the majority class (Enrolled) and fail to detect the minority class of interest (Dropout). We explicitly address this via SMOTE.
+\end{enumerate}
+
+\vspace{1cm}
+% Placeholder for visual comparison
+\begin{figure}[H]
+    \centering
+    \fbox{
+        \parbox{0.9\textwidth}{
+            \centering
+            \vspace{8cm}
+            \textbf{Figure 2.1: Evolution of EDM Techniques (Placeholder)} \\
+            \textit{A timeline showing the shift from Statistical Methods $\rightarrow$ Predictive Modeling $\rightarrow$ Explainable AI.}
+        }
+    }
+    \caption{Evolution of Educational Data Mining Techniques}
+    \label{fig:edm_evolution}
+\end{figure}

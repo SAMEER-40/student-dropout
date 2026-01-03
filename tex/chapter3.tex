@@ -1,0 +1,88 @@
+\chapter{Problem Statement and System Model}
+
+\section{Formal Problem Statement}
+The objective of this work is to construct a predictive system that learns the mapping between a student's profile at time $t$ and their final academic status.
+
+\subsection{Mathematical Formulation}
+Let $S = \{s_1, s_2, ..., s_N\}$ be the set of $N$ students in the dataset.  
+Each student $s_i$ is represented by a feature vector $\mathbf{x}_i \in \mathbb{R}^d$, where $d$ is the dimensionality of the feature space. The feature space $\mathcal{X}$ is composed of three disjoint subsets:
+\begin{equation}
+    \mathcal{X} = \mathcal{X}_{demo} \cup \mathcal{X}_{academic} \cup \mathcal{X}_{socio}
+\end{equation}
+where:
+\begin{itemize}
+    \item $\mathcal{X}_{demo}$ contains demographic features (e.g., Age, Gender, Marital Status).
+    \item $\mathcal{X}_{academic}$ contains academic performance metrics (e.g., Grade$_1$, Grade$_2$, Previous Qualification).
+    \item $\mathcal{X}_{socio}$ contains macro-economic indicators (e.g., GDP, Inflation Rate).
+\end{itemize}
+
+Let $\mathcal{Y} = \{0, 1, 2\}$ be the set of target labels, mapping to $\{\text{Dropout}, \text{Enrolled}, \text{Graduate}\}$ respectively.
+Our goal is to learn a hypothesis function $h_{\theta}(\mathbf{x}): \mathbb{R}^d \rightarrow [0, 1]^{|\mathcal{Y}|}$ parameterized by $\theta$, such that it minimizes the categorical cross-entropy loss function $J(\theta)$:
+\begin{equation}
+    J(\theta) = -\frac{1}{N} \sum_{i=1}^{N} \sum_{c=0}^{2} \mathbb{I}(y_i = c) \log(h_{\theta}(\mathbf{x}_i)_c)
+\end{equation}
+where $\mathbb{I}(\cdot)$ is the indicator function.
+
+\section{Proposed System Architecture}
+The proposed system follows a modular microservices-based architecture, decoupling the Machine Learning pipeline from the User Interface. This ensures scalability and maintainability.
+
+\subsection{Data Pipeline Architecture}
+The data pipeline is responsible for ingesting raw CSV files, merging them based on foreign keys (if applicable), and cleaning the data.
+\begin{enumerate}
+    \item \textbf{Ingestion Layer:} Reads raw CSVs from the \texttt{data/raw/} directory.
+    \item \textbf{Processing Layer:} Applies transformations $T: \mathcal{D}_{raw} \rightarrow \mathcal{D}_{processed}$. This involves:
+    \begin{itemize}
+        \item Categorical Encoding: $\Psi_{cat}: \{str\} \rightarrow \mathbb{Z}$
+        \item Scaling: $\Psi_{scale}: \mathbb{R} \rightarrow [0, 1]$ (MinMax) or $\mathcal{N}(0, 1)$ (Standard)
+        \item Balancing: $\Psi_{smote}: \mathcal{D} \rightarrow \mathcal{D}'$ where $|y_{\text{minority}}| \approx |y_{\text{majority}}|$
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Model Training Pipeline}
+The training pipeline orchestrates the model selection and optimization process.
+\begin{itemize}
+    \item \textbf{Candidate Models:} $\mathcal{M} = \{\text{LogisticRegression}, \text{SVM}, \text{RandomForest}, \text{XGBoost}\}$
+    \item \textbf{Hyperparameter Optimization:} We employ RandomizedSearchCV to find optimal hyperparameters $\lambda^*$:
+    \begin{equation}
+        \lambda^* = \underset{\lambda \in \Lambda}{\text{argmin}} \frac{1}{k} \sum_{j=1}^{k} \mathcal{L}_{val}^{(j)}(\lambda)
+    \end{equation}
+    where $k$ is the number of folds in k-fold cross-validation.
+\end{itemize}
+
+\subsection{Deployment Architecture (FastAPI + React)}
+The system is deployed using a client-server architecture:
+\begin{itemize}
+    \item \textbf{Backend (Server):} Python-based FastAPI application serving the trained model via REST endpoints. It implements a Singleton pattern for the \texttt{PredictionService} to ensure models are loaded only once into memory.
+    \item \textbf{Frontend (Client):} React SPA (Single Page Application) that dynamically fetches the feature schema $\mathcal{S}$ from the backend to construct form fields at runtime.
+\end{itemize}
+
+\vspace{1cm}
+% Placeholder for Architecture Diagram
+\begin{figure}[H]
+    \centering
+    \fbox{
+        \parbox{0.9\textwidth}{
+            \centering
+            \vspace{10cm}
+            \textbf{Figure 3.1: High-Level System Architecture} \\
+            \textit{Data Flow Diagram showing: Raw CSVs $\rightarrow$ Preprocessing $\rightarrow$ Model $\rightarrow$ FastAPI $\rightarrow$ React UI.}
+        }
+    }
+    \caption{Proposed System Architecture}
+    \label{fig:architecture}
+\end{figure}
+
+\section{Functional Requirements}
+\begin{itemize}
+    \item \textbf{FR-01 Data Ingestion:} The system must ingest data from CSV format.
+    \item \textbf{FR-02 Prediction:} The system must output a predicted class and confidence score for a given student profile.
+    \item \textbf{FR-03 Explanation:} The system must provide SHAP-based local explanations for each prediction.
+    \item \textbf{FR-04 Validation:} The system must validate input data against the feature schema before inference.
+\end{itemize}
+
+\section{Non-Functional Requirements}
+\begin{itemize}
+    \item \textbf{NFR-01 Latency:} Inference time should be $< 200$ms for predictions without explanation.
+    \item \textbf{NFR-02 Scalability:} The API should be stateless to allow horizontal scaling.
+    \item \textbf{NFR-03 Usability:} The UI should explain technical results in layman's terms (e.g., green/red indicators).
+\end{itemize}

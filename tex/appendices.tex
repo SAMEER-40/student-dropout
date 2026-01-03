@@ -1,0 +1,47 @@
+\appendix
+\chapter{Cost Estimations}
+\section{Cloud Infrastructure Costs}
+Assuming a monthly active user base of 1,000 administrators, the estimated cloud hosting costs on AWS are:
+\begin{table}[H]
+    \centering
+    \caption{Estimated Monthly Cloud Costs}
+    \begin{tabular}{|l|l|r|}
+    \hline
+    \textbf{Service} & \textbf{Type} & \textbf{Cost (USD)} \\
+    \hline
+    EC2 Instance & t3.medium (App Server) & \$30.00 \\
+    RDS Database & db.t3.micro (Metadata) & \$15.00 \\
+    S3 Storage & Data \& Artifacts & \$5.00 \\
+    Data Transfer & Outbound Traffic & \$10.00 \\
+    \hline
+    \textbf{Total} & & \textbf{\$60.00} \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\chapter{User Manual}
+\section{Installation}
+\begin{enumerate}
+    \item Clone the repository: \texttt{git clone https://github.com/SAMEER-40/student-dropout.git}
+    \item Install dependencies: \texttt{pip install -r requirements.txt}
+    \item Start Backend: \texttt{uvicorn api.main:app --reload}
+    \item Start Frontend: \texttt{cd frontend \&\& npm run dev}
+\end{enumerate}
+
+\section{Usage Guide}
+\begin{itemize}
+    \item Open browser to \texttt{http://localhost:5173}.
+    \item Fill in the student details in the form.
+    \item Toggle "Include Explanation" to see SHAP values.
+    \item Click "Predict Outcome".
+    \item View the result card (Red/Green) and interpretation chart.
+\end{itemize}
+
+\chapter{Glossary}
+\begin{itemize}
+    \item \textbf{EDM:} Educational Data Mining.
+    \item \textbf{SHAP:} SHapley Additive exPlanations.
+    \item \textbf{SMOTE:} Synthetic Minority Over-sampling Technique.
+    \item \textbf{API:} Application Programming Interface.
+    \item \textbf{SPA:} Single Page Application.
+\end{itemize}

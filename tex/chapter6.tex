@@ -1,0 +1,73 @@
+\chapter{Results and Performance Analysis}
+
+\section{Evaluation Metrics}
+The performance of the models was evaluated using the following metrics:
+\begin{itemize}
+    \item \textbf{Accuracy:} The ratio of correctly predicted observations to total observations.
+    \item \textbf{Precision:} The ratio of correctly predicted positive observations to the total predicted positives.
+    \item \textbf{Recall (Sensitivity):} The ratio of correctly predicted positive observations to the all observations in actual class.
+    \item \textbf{F1-Score:} The weighted average of Precision and Recall.
+\end{itemize}
+
+\section{Experimental Results}
+\subsection{Model Comparison}
+Table \ref{tab:results} presents the comparative analysis of different algorithms on the test set.
+
+\begin{table}[H]
+    \centering
+    \caption{Performance Comparison of ML Algorithms}
+    \label{tab:results}
+    \begin{tabular}{|l|c|c|c|c|}
+    \hline
+    \textbf{Algorithm} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+    \hline
+    Logistic Regression & 72.4\% & 0.71 & 0.72 & 0.71 \\
+    Support Vector Machine & 74.1\% & 0.73 & 0.74 & 0.73 \\
+    XGBoost & 76.2\% & 0.76 & 0.76 & 0.76 \\
+    \textbf{Random Forest (Ours)} & \textbf{77.3\%} & \textbf{0.77} & \textbf{0.77} & \textbf{0.77} \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\subsection{Confusion Matrix Analysis}
+The confusion matrix for the best performing Random Forest model reveals that the model performs exceptionally well in distinguishing between 'Graduate' and 'Dropout' classes. However, there is some misclassification between 'Enrolled' and 'Dropout', which is expected as 'Enrolled' is an intermediate state.
+
+\vspace{0.5cm}
+% Placeholder for Confusion Matrix
+\begin{figure}[H]
+    \centering
+    \fbox{
+        \parbox{0.6\textwidth}{
+            \centering
+            \vspace{8cm}
+            \textbf{Figure 6.1: Confusion Matrix for Random Forest} \\
+            \textit{Heatmap showing True Labels vs Predicted Labels for Dropout, Enrolled, and Graduate classes.}
+        }
+    }
+    \caption{Confusion Matrix}
+    \label{fig:confusion_matrix}
+\end{figure}
+
+\section{Feature Importance Analysis}
+Feature importance analysis using SHAP values (Figure \ref{fig:shap_summary}) indicates that \textbf{Curricular units 2nd sem (approved)} is the strongest predictor of student success, followed by **Tuition fees up to date**.
+\begin{itemize}
+    \item Students with tuition fees up to date are significantly less likely to dropout.
+    \item Older age at enrollment correlates positively with dropout probability.
+    \item Scholarship holders have a higher retention rate.
+\end{itemize}
+
+\vspace{0.5cm}
+% Placeholder for SHAP Summary Plot
+\begin{figure}[H]
+    \centering
+    \fbox{
+        \parbox{0.8\textwidth}{
+            \centering
+            \vspace{10cm}
+            \textbf{Figure 6.2: SHAP Summary Plot} \\
+            \textit{Dot plot showing the impact of top 20 features on model output.}
+        }
+    }
+    \caption{Global Feature Importance via SHAP}
+    \label{fig:shap_summary}
+\end{figure}

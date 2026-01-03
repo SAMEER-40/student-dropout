@@ -1,0 +1,110 @@
+\chapter{Proposed Methodology}
+
+\section{Data Acquisition and Integration}
+The dataset used in this study is an aggregation of disjoint sources containing information about student enrollment, academic performance, and socio-economic background. The integration process involves aligning schema definitions and handling missing attributes.
+
+\section{Data Preprocessing Framework}
+Data quality is paramount for model performance. Our preprocessing framework consists of Missing Value Imputation, Categorical Encoding, and Feature Scaling. 
+
+\subsection{Algorithm 1: Adaptive Data Preprocessing}
+The preprocessing logic is encapsulated in the following algorithm, which ensures that training and serving pipelines use identical transformations.
+
+\begin{algorithm}[H]
+\caption{Adaptive Data Preprocessing Pipeline}
+\label{alg:preprocessing}
+\begin{algorithmic}[1]
+\Require Raw Dataset $\mathcal{D}_{raw}$, Target Column $y$, Categorical Cols $C$, Numerical Cols $N$
+\Ensure Processed Dataset $\mathcal{D}_{processed}$, Preprocessor Object $P$
+
+\State \textbf{Initialize} $P \leftarrow$ ColumnTransformer()
+\State \textbf{Step 1: Handling Numerical Features}
+\For{each column $col \in N$}
+    \State Impute missing values in $col$ using $Mean(col)$
+    \State Apply StandardScaling: $x' = \frac{x - \mu}{\sigma}$
+\EndFor
+\State \textbf{Step 2: Handling Categorical Features}
+\For{each column $col \in C$}
+    \State Impute missing values with 'Unknown'
+    \State Apply OneHotEncoding to $col$
+\EndFor
+\State \textbf{Step 3: Target Encoding}
+\State $y_{encoded} \leftarrow$ LabelEncoder($y$)
+\State \textbf{Fit} $P$ on $\mathcal{D}_{raw}$
+\State $\mathcal{D}_{processed} \leftarrow P.transform(\mathcal{D}_{raw})$
+\State \Return $\mathcal{D}_{processed}, P$
+\end{algorithmic}
+\end{algorithm}
+
+\section{Class Imbalance Handling (SMOTE)}
+Initial data exploration revealed a significant imbalance: the 'Dropout' class represented only 32\% of the data, while 'Graduate' represented 50\%. Training on this would yield a biased model. We employed SMOTE (Synthetic Minority Over-sampling Technique).
+
+\subsection{Algorithm 2: SMOTE Oversampling}
+SMOTE synthesizes new examples for the minority class.
+
+\begin{algorithm}[H]
+\caption{SMOTE Oversampling}
+\label{alg:smote}
+\begin{algorithmic}[1]
+\Require Minority Class Samples $S_{min}$, Percentage of Oversampling $N\%$, Nearest Neighbors $k$
+\Ensure Synthetic Samples $S_{syn}$
+
+\State $S_{syn} \leftarrow \emptyset$
+\For{each sample $x_i \in S_{min}$}
+    \State Find $k$ nearest neighbors of $x_i$ in feature space
+    \State Select one random neighbor $\hat{x}_i$
+    \State Calculate difference vector $\delta = \hat{x}_i - x_i$
+    \State Generate random gap $\gamma \in [0, 1]$
+    \State Create synthetic sample $x_{new} = x_i + (\gamma \times \delta)$
+    \State Add $x_{new}$ to $S_{syn}$
+\EndFor
+\State \Return $S_{syn}$
+\end{algorithmic}
+\end{algorithm}
+
+\section{Model Development}
+\subsection{Random Forest Classifier Ensemble}
+After evaluating multiple algorithms, Random Forest was selected for its robustness to noise and ability to handle non-linear feature interactions without extensive tuning.
+
+\subsection{Algorithm 3: Model Training and Selection}
+The complete training loop includes hyperparameter optimization via randomized search.
+
+\begin{algorithm}[H]
+\caption{Model Training with Hyperparameter Optimization}
+\label{alg:training}
+\begin{algorithmic}[1]
+\Require Training Data $X_{train}, y_{train}$, Hyperparameter Space $\Lambda$
+\Ensure Best Model $M_{best}$
+
+\State \textbf{Define} Base Model $M_{rf} \leftarrow$ RandomForestClassifier()
+\State \textbf{Define} Scoring Metric $S \leftarrow$ Accuracy
+\State \textbf{Initialize} Search $Opt \leftarrow$ RandomizedSearchCV($M_{rf}, \Lambda, cv=5, scoring=S$)
+\State \textbf{Execute} $Opt.fit(X_{train}, y_{train})$
+\State $M_{best} \leftarrow Opt.best\_estimator\_$
+\State \textbf{Validate} on Hold-out Set
+\If{$Accuracy(M_{best}) < Threshold$}
+    \State \textbf{GoTo} Feature Engineering
+\Else
+    \State Serialize $M_{best}$ to disk
+\EndIf
+\State \Return $M_{best}$
+\end{algorithmic}
+\end{algorithm}
+
+\vspace{1cm}
+% Placeholder for Methodology Flowchart
+\begin{figure}[H]
+    \centering
+    \fbox{
+        \parbox{0.9\textwidth}{
+            \centering
+            \vspace{10cm}
+            \textbf{Figure 4.1: Proposed Methodology Flowchart} \\
+            \textit{Flowchart describing: Raw Data $\rightarrow$ Preprocessing (Alg 1) $\rightarrow$ SMOTE (Alg 2) $\rightarrow$ Training (Alg 3) $\rightarrow$ Evaluation.}
+        }
+    }
+    \caption{Methodology Flowchart}
+    \label{fig:methodology}
+\end{figure}
+
+\section{Explainability Engine (SHAP)}
+To fulfill the requirement of transparency, we integrate SHAP. The system calculates SHAP values for the top $K$ contributing features for every prediction request. This is computationally expensive, so it is decoupled from the main prediction path and triggered only when the `explain` flag is set to True.

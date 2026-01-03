@@ -1,0 +1,105 @@
+\appendix
+
+\chapter{Source Code Listings}
+This appendix provides the implementation details of the core modules.
+
+\section{API Main Entry Point (main.py)}
+\begin{lstlisting}[language=Python, caption=FastAPI Application Entry Point]
+from fastapi import FastAPI, HTTPException
+from contextlib import asynccontextmanager
+from api.services.prediction import PredictionService
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Load ML Artifacts
+    try:
+        PredictionService.load_artifacts()
+        logger.info("ML Artifacts loaded successfully")
+    except Exception as e:
+        logger.critical(f"Failed artifact load: {e}")
+    yield
+    # Shutdown: Cleanup
+    logger.info("Shutting down prediction service")
+
+app = FastAPI(title="Student Dropout Prediction API", lifespan=lifespan)
+
+@app.post("/predict", response_model=PredictionResponse)
+async def predict(request: PredictionRequest):
+    result = PredictionService.predict(request.features, request.explain)
+    return result
+\end{lstlisting}
+
+\section{Golden Invariant Test (test\_golden.py)}
+\begin{lstlisting}[language=Python, caption=Golden Invariant Test Suite]
+def test_golden_prediction_invariant():
+    """
+    Ensures that a known fixed input vector produces 
+    the EXACT same probability distribution.
+    """
+    fixed_input = {
+        "Age": 20, "Gender": 1, "GDP": 1.76, 
+        "Scholarship": 0, "Tuition_Fees": 1
+    }
+    expected_prob_dropout = 0.1245
+    
+    result = service.predict(fixed_input)
+    assert abs(result.probs['Dropout'] - expected_prob_dropout) < 1e-4
+\end{lstlisting}
+
+\chapter{Feasibility and Cost Analysis}
+\section{Operational Costs}
+Deployment on a public cloud provider like AWS requires cost estimation.
+\begin{table}[H]
+    \centering
+    \caption{Projected Monthly AWS Costs (US East N. Virginia)}
+    \begin{tabular}{|l|l|r|}
+    \hline
+    \textbf{Service Tier} & \textbf{Resource Type} & \textbf{Monthly Cost} \\
+    \hline
+    Compute & EC2 t3.medium (2 vCPU, 4GB RAM) & \$30.37 \\
+    \hline
+    Database & RDS PostgreSQL db.t3.micro & \$14.60 \\
+    \hline
+    Storage & EBS gp3 Volume (20 GB) & \$1.60 \\
+    \hline
+    Networking & Elastic Load Balancer (ALB) & \$16.00 \\
+    \hline
+    \textbf{Total} & & \textbf{\$62.57} \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\chapter{User Manual and Installation Guide}
+\section{Installation From Source}
+\textbf{Prerequisites:} Python 3.9+, Node.js 16+, Git.
+
+\subsection{Step 1: Cloning the Repository}
+\begin{verbatim}
+$ git clone https://github.com/SAMEER-40/student-dropout.git
+$ cd student-dropout
+\end{verbatim}
+
+\subsection{Step 2: Backend Setup}
+\begin{verbatim}
+$ python -m venv venv
+$ source venv/bin/activate  # or venv\Scripts\activate on Windows
+$ pip install -r requirements.txt
+$ python -m uvicorn api.main:app --reload
+\end{verbatim}
+
+\subsection{Step 3: Frontend Setup}
+\begin{verbatim}
+$ cd frontend
+$ npm install
+$ npm run dev
+\end{verbatim}
+Access the application at \texttt{http://localhost:5173}.
+
+\chapter{Glossary of Terms}
+\begin{description}
+    \item[EDM] \textbf{Educational Data Mining}: The application of data mining techniques to educational data.
+    \item[SMOTE] \textbf{Synthetic Minority Over-sampling Technique}: A statistical technique for increasing the number of cases in your dataset in a balanced way.
+    \item[SHAP] \textbf{SHapley Additive exPlanations}: A game theoretic approach to explain the output of any machine learning model.
+    \item[API] \textbf{Application Programming Interface}: A set of functions and procedures allowing the creation of applications that access the features or data of an operating system, application, or other service.
+    \item[SPA] \textbf{Single Page Application}: A web application or website that interacts with the user by dynamically rewriting the current web page with new data from the web server.
+\end{description}

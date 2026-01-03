@@ -1,0 +1,258 @@
+\documentclass[12pt, a4paper]{report}
+
+% =========================================
+% PACKAGES
+% =========================================
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}      % Standard margins
+\usepackage{setspace}                  % For spacing
+\usepackage{graphicx}                  % For images
+\usepackage{amsmath, amssymb, amsfonts}% Math symbols
+\usepackage{algorithm}                 % For algorithms
+\usepackage{algpseudocode}             % For pseudocode
+\usepackage{listings}                  % For code snippets
+\usepackage{hyperref}                  % For links
+\usepackage{booktabs}                  % Professional tables
+\usepackage{float}                     % For explicit figure placement
+\usepackage{caption}                   % Better captions
+\usepackage{subcaption}                % Subfigures
+\usepackage{cite}                      % For citations
+\usepackage{titlesec}                  % Custom chapter titles
+\usepackage{fancyhdr}                  % Headers and footers
+\usepackage{color}                     % Colors
+\usepackage{tocloft}                   % Table of contents formatting
+
+% =========================================
+% SETTINGS
+% =========================================
+\onehalfspacing                        % 1.5 line spacing (Standard for thesis)
+\setlength{\parskip}{6pt}             % Space between paragraphs
+\setcounter{secnumdepth}{3}           % Numbering depth
+\setcounter{tocdepth}{3}              % TOC depth
+
+% Hyperlink settings
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=magenta,      
+    urlcolor=blue,
+    citecolor=black,
+    pdftitle={Student Dropout Prediction Using Machine Learning},
+    pdfauthor={Santosh}
+}
+
+% Code snippet styling
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+% =========================================
+% DOCUMENT STRUCTURE
+% =========================================
+\begin{document}
+
+% -----------------------------------------
+% FRONT MATTER
+% -----------------------------------------
+\pagenumbering{roman} % Roman numerals for front matter
+
+% Title Page
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    \Huge
+    \textbf{Student Dropout Prediction System Using Machine Learning and Explainable AI}
+    
+    \vspace{1.5cm}
+    
+    \Large
+    \textit{A Minor Project Report submitted in partial fulfillment\\
+    of the requirements for the degree of}
+    
+    \vspace{1cm}
+    
+    \textbf{Bachelor of Technology}\\
+    \textit{in}\\
+    \textbf{Computer Science and Engineering}
+    
+    \vspace{2cm}
+    
+    \textbf{Submitted by:}
+    
+    \vspace{0.5cm}
+    \textbf{Santosh} \\
+    (Roll No: XXXXXXXXX)
+    
+    \vspace{2cm}
+    
+    \textbf{Under the Supervision of:}
+    
+    \vspace{0.5cm}
+    \textbf{Prof. Guide Name} \\
+    Designation, Dept. of CSE
+    
+    \vfill
+    
+    \includegraphics[width=0.2\textwidth]{images/placeholder_logo.png} % Placeholder logo
+    
+    \vspace{0.5cm}
+    
+    \Large
+    \textbf{Department of Computer Science and Engineering}\\
+    \textbf{University Name, Location}\\
+    \textbf{Month, Year}
+    
+\end{titlepage}
+
+% Certificate
+\chapter*{Certificate}
+\addcontentsline{toc}{chapter}{Certificate}
+This is to certify that the project entitled \textbf{``Student Dropout Prediction System Using Machine Learning and Explainable AI''} submitted by \textbf{Santosh} in partial fulfillment of the requirements for the award of the degree of \textbf{Bachelor of Technology in Computer Science and Engineering} is a bona fide record of the work carried out by him under my supervision and guidance.
+
+\vspace{3cm}
+\noindent
+\begin{tabular}{lr}
+    \makebox[2.5in]{\hrulefill} & \makebox[2.5in]{\hrulefill} \\
+    \textbf{Signature of Supervisor} & \textbf{Signature of HOD} \\
+    Prof. Guide Name & Prof. Head Name \\
+    Dept. of CSE & Dept. of CSE \\
+\end{tabular}
+
+% Acknowledgement
+\chapter*{Acknowledgement}
+\addcontentsline{toc}{chapter}{Acknowledgement}
+I would like to express my deep gratitude to...
+
+% Abstract
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+The increasing rate of student dropouts in higher education institutions poses a significant challenge... This project proposes a robust machine learning framework leveraging Random Forest and XGBoost... We achieve an accuracy of 77\%... Explainability is provided via SHAP (SHapley Additive exPlanations)...
+
+% Tables of Contents, Figures, Tables
+\tableofcontents
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+
+\clearpage
+\pagenumbering{arabic} % Arabic numerals for main content
+
+% -----------------------------------------
+% CHAPTER 1: INTRODUCTION
+% -----------------------------------------
+\chapter{Introduction}
+\section{Background and Motivation}
+\section{Historical Context of Educational Data Mining}
+\section{Problem Definition}
+\section{Objectives of the Study}
+\section{Societal Impact}
+\section{Scope and Limitations}
+\section{Organization of the Report}
+
+% -----------------------------------------
+% CHAPTER 2: LITERATURE REVIEW
+% -----------------------------------------
+\chapter{Literature Review}
+\section{Overview of Student Retention Analysis}
+\section{Comparative Analysis of Existing Systems}
+\section{Machine Learning in Education}
+\section{Explainable AI (XAI) in Predictive Modeling}
+\section{Gap Analysis}
+
+% -----------------------------------------
+% CHAPTER 3: SYSTEM ANALYSIS AND ARCHITECTURE
+% -----------------------------------------
+\chapter{Problem Statement and System Model}
+\section{Formal Problem Statement}
+\subsection{Mathematical Formulation}
+% Define sets: S (Students), F (Features), C (Classes)
+% Optimization function for minimizing Loss L(y, y_hat)
+\section{Proposed System Architecture}
+\subsection{Data Pipeline Architecture}
+\subsection{Model Training Pipeline}
+\subsection{Deployment Architecture (FastAPI + React)}
+\section{Functional Requirements}
+\section{Non-Functional Requirements}
+
+% -----------------------------------------
+% CHAPTER 4: METHODOLOGY AND ALGORITHMS
+% -----------------------------------------
+\chapter{Proposed Methodology}
+\section{Data Acquisition and Integration}
+\section{Data Preprocessing Framework}
+\subsection{Algorithm 1: Adaptive Data Preprocessing and Imputation}
+\section{Feature Engineering and Selection}
+\section{Class Imbalance Handling (SMOTE)}
+\subsection{Algorithm 2: SMOTE Oversampling Technique}
+\section{Model Development}
+\subsection{Random Forest Classifier Ensemble}
+\subsection{Algorithm 3: Model Training and Hyperparameter Tuning}
+\section{Explainability Engine (SHAP)}
+
+% -----------------------------------------
+% CHAPTER 5: IMPLEMENTATION
+% -----------------------------------------
+\chapter{Implementation Details}
+\section{Hardware and Software Specifications}
+\section{Technology Stack Justification}
+\section{Backend Implementation (FastAPI)}
+\section{Frontend Implementation (React + Vite)}
+\section{Key Modules and Functions}
+\subsection{Schema Locking Mechanism}
+\subsection{Prediction Service Layer}
+
+% -----------------------------------------
+% CHAPTER 6: RESULTS AND PERFORMANCE ANALYSIS
+% -----------------------------------------
+\chapter{Results and Performance Analysis}
+\section{Evaluation Metrics}
+\section{Experimental Results}
+\subsection{Model Comparison (RF vs XGBoost vs LR)}
+\subsection{Confusion Matrix Analysis}
+\section{Feature Importance Analysis}
+\section{System Outcomes}
+
+% -----------------------------------------
+% CHAPTER 7: CONCLUSION AND FUTURE SCOPE
+% -----------------------------------------
+\chapter{Conclusion and Future Scope}
+\section{Conclusion}
+\section{Contributions}
+\section{Future Enhancements}
+
+% -----------------------------------------
+% REFERENCES & APPENDICES
+% -----------------------------------------
+\bibliographystyle{ieeetr}
+\bibliography{references}
+
+\appendix
+\chapter{Code Snippets}
+\chapter{Feasibility and Cost Analysis}
+\chapter{User Manual}
+\chapter{Glossary}
+
+\end{document}

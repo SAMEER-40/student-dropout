@@ -1,0 +1,89 @@
+\chapter{Implementation Details}
+
+\section{Hardware and Software Specifications}
+The implementation of the system was carried out on a high-performance computing environment. The specific hardware and software configurations are detailed below.
+\begin{table}[H]
+    \centering
+    \caption{Hardware Specifications}
+    \begin{tabular}{|l|l|}
+    \hline
+    \textbf{Component} & \textbf{Specification} \\
+    \hline
+    Processor & Intel Core i7-12700H (14 Cores, 2.3 GHz) \\
+    RAM & 16 GB DDR4 3200 MHz \\
+    GPU & NVIDIA GeForce RTX 3060 (6GB VRAM) \\
+    Storage & 1 TB NVMe SSD \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Software Stack}
+    \begin{tabular}{|l|l|}
+    \hline
+    \textbf{Component} & \textbf{Version} \\
+    \hline
+    Operating System & Windows 11 Pro \\
+    Python & 3.10.1 \\
+    Scikit-Learn & 1.3.2 \\
+    XGBoost & 2.0.3 \\
+    FastAPI & 0.109.0 \\
+    React & 18.2.0 \\
+    Vite & 5.0.0 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\section{Backend Implementation (FastAPI)}
+The backend is built using FastAPI due to its high performance and native support for asynchronous programming. The core logic resides in `api/services/prediction.py`, which is implemented as a pure Python service decoupled from the HTTP layer. This allows for unit testing without spinning up a server.
+Key implementation details include:
+\begin{itemize}
+    \item \textbf{Startup Event:} The ML artifacts (model, preprocessor, encoder) are loaded into memory once during application startup using the `@asynccontextmanager` decorator.
+    \item \textbf{Schema Validation:} Pydantic models in `api/schemas.py` enforce strict typing on input JSON, ensuring valid data reaches the predictor.
+    \item \textbf{CORS Middleware:} Configured to allow cross-origin requests from the React frontend running on localhost.
+\end{itemize}
+
+\section{Frontend Implementation (React + Vite)}
+The frontend is a Single Page Application (SPA) built with React and Vite.
+\begin{itemize}
+    \item \textbf{Dynamic Forms:} The input form is not hardcoded. Instead, the frontend calls the `/api/schema` endpoint on mount to fetch the feature list and metadata (min, max, options), rendering the form fields dynamically.
+    \item \textbf{Components:} Reusable components like `ResultCard` and `ShapChart` are used to display predictions and explanations respectively.
+\end{itemize}
+
+\section{Key Modules and Functions}
+\subsection{Schema Locking Mechanism}
+To prevent feature mismatch between training and inference times, a strict schema locking mechanism was implemented in `src/utils.py`.
+\begin{lstlisting}[language=Python, caption=Schema Validation Logic]
+def validate_consistency(self) -> bool:
+    """Ensure artifacts match."""
+    errors = []
+    # Check feature count
+    if self.model.n_features_in_ != len(self.feature_names):
+        errors.append(f"Model expects {self.model.n_features_in_} features...")
+    
+    if errors:
+        raise ValueError("Model artifacts are inconsistent")
+    return True
+\end{lstlisting}
+
+\subsection{Prediction Service Layer}
+The prediction service handles the orchestration of preprocessing and inference.
+\begin{lstlisting}[language=Python, caption=Prediction with SHAP]
+def predict(self, features: Dict[str, float], explain: bool = False):
+    # 1. Convert dict to DataFrame
+    df = self._features_to_dataframe(features)
+    
+    # 2. Preprocess
+    X_proc = self.preprocessor.transform(df)
+    
+    # 3. Predict
+    prob = self.model.predict_proba(X_proc)[0]
+    
+    # 4. Explain (Optional)
+    if explain:
+        shap_values = self._shap_explainer.shap_values(X_proc)
+        # ... logic to extract top K features ...
+        
+    return result
+\end{lstlisting}

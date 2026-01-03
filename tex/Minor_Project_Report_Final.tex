@@ -1,0 +1,425 @@
+\documentclass[12pt, a4paper]{report}
+
+% =========================================
+% PACKAGES
+% =========================================
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}      % Standard margins
+\usepackage{setspace}                  % For spacing
+\usepackage{graphicx}                  % For images
+\usepackage{amsmath, amssymb, amsfonts}% Math symbols
+\usepackage{algorithm}                 % For algorithms
+\usepackage{algpseudocode}             % For pseudocode
+\usepackage{listings}                  % For code snippets
+\usepackage{hyperref}                  % For links
+\usepackage{booktabs}                  % Professional tables
+\usepackage{float}                     % For explicit figure placement
+\usepackage{caption}                   % Better captions
+\usepackage{subcaption}                % Subfigures
+\usepackage{cite}                      % For citations
+\usepackage{titlesec}                  % Custom chapter titles
+\usepackage{fancyhdr}                  % Headers and footers
+\usepackage{color}                     % Colors
+\usepackage{tocloft}                   % Table of contents formatting
+\usepackage{filecontents}              % To include bibliography in main file
+
+% =========================================
+% SETTINGS
+% =========================================
+\onehalfspacing                        % 1.5 line spacing (Standard for thesis)
+\setlength{\parskip}{6pt}             % Space between paragraphs
+\setcounter{secnumdepth}{3}           % Numbering depth
+\setcounter{tocdepth}{3}              % TOC depth
+
+% Hyperlink settings
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=magenta,      
+    urlcolor=blue,
+    citecolor=black,
+    pdftitle={Student Dropout Prediction Using Machine Learning},
+    pdfauthor={Santosh}
+}
+
+% Code snippet styling
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+% =========================================
+% EMBEDDED PREAMBLE & BIBLIOGRAPHY
+% =========================================
+\begin{filecontents}{references.bib}
+@article{tinto1975dropout,
+  title={Dropout from higher education: A theoretical synthesis of recent research},
+  author={Tinto, Vincent},
+  journal={Review of educational research},
+  volume={45},
+  number={1},
+  pages={89--125},
+  year={1975},
+  publisher={Sage Publications Sage CA: Thousand Oaks, CA}
+}
+@article{bean1980dropouts,
+  title={Dropouts and turnover: The synthesis and test of a causal model of student attrition},
+  author={Bean, John},
+  journal={Research in higher education},
+  volume={12},
+  number={2},
+  pages={155--187},
+  year={1980},
+  publisher={Springer}
+}
+@inproceedings{manrique2019dropout,
+  title={Dropout prediction in higher education using educational data mining},
+  author={Manrique, Ruben and Nunes, B and Marino, O},
+  booktitle={Proceedings of the 9th International Conference on Learning Analytics \& Knowledge},
+  year={2019}
+}
+@article{sarker2020neural,
+  title={Student performance prediction using artificial neural network},
+  author={Sarker, I. and et al.},
+  journal={International Journal of Artificial Intelligence},
+  year={2020}
+}
+@article{breiman2001random,
+  title={Random forests},
+  author={Breiman, Leo},
+  journal={Machine learning},
+  volume={45},
+  number={1},
+  pages={5--32},
+  year={2001},
+  publisher={Springer}
+}
+@inproceedings{lundberg2017unified,
+  title={A unified approach to interpreting model predictions},
+  author={Lundberg, Scott M and Lee, Su-In},
+  booktitle={Advances in neural information processing systems},
+  pages={4765--4774},
+  year={2017}
+}
+@article{chen2016xgboost,
+  title={Xgboost: A scalable tree boosting system},
+  author={Chen, Tianqi and Guestrin, Carlos},
+  journal={Proceedings of the 22nd acm sigkdd international conference on knowledge discovery and data mining},
+  year={2016}
+}
+@article{chawla2002smote,
+  title={SMOTE: synthetic minority over-sampling technique},
+  author={Chawla, Nitesh V and Bowyer, Kevin W and Hall, Lawrence O and Kegelmeyer, W Philip},
+  journal={Journal of artificial intelligence research},
+  volume={16},
+  pages={321--357},
+  year={2002}
+}
+\end{filecontents}
+
+% =========================================
+% DOCUMENT START
+% =========================================
+\begin{document}
+
+% -----------------------------------------
+% FRONT MATTER
+% -----------------------------------------
+\pagenumbering{roman}
+
+% Title Page
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    \Huge \textbf{Student Dropout Prediction System Using Machine Learning and Explainable AI}
+    \vspace{1.5cm}
+    \Large \textit{A Minor Project Report submitted in partial fulfillment\\ of the requirements for the degree of}
+    \vspace{1cm}
+    \textbf{Bachelor of Technology} \\ \textit{in} \\ \textbf{Computer Science and Engineering}
+    \vspace{2cm}
+    \textbf{Submitted by:} \vspace{0.5cm} \\ \textbf{Santosh} \\ (Roll No: XXXXXXXXX)
+    \vspace{2cm}
+    \textbf{Under the Supervision of:} \vspace{0.5cm} \\ \textbf{Prof. Guide Name} \\ Designation, Dept. of CSE
+    \vfill
+    \includegraphics[width=0.2\textwidth]{images/opop.png} % Using actual image
+    \vspace{0.5cm}
+    \textbf{Department of Computer Science and Engineering}\\ \textbf{University Name, Location}\\ \textbf{Month, Year}
+\end{titlepage}
+
+% Certificate
+\chapter*{Certificate}
+\addcontentsline{toc}{chapter}{Certificate}
+This is to certify that the project entitled \textbf{``Student Dropout Prediction System Using Machine Learning and Explainable AI''} submitted by \textbf{Santosh} in partial fulfillment of the requirements for the award of the degree of \textbf{Bachelor of Technology in Computer Science and Engineering} is a bona fide record of the work carried out by him under my supervision and guidance.
+\vspace{3cm} \\
+\noindent
+\begin{tabular}{lr}
+    \makebox[2.5in]{\hrulefill} & \makebox[2.5in]{\hrulefill} \\
+    \textbf{Signature of Supervisor} & \textbf{Signature of HOD} \\
+\end{tabular}
+
+% Acknowledgement
+\chapter*{Acknowledgement}
+\addcontentsline{toc}{chapter}{Acknowledgement}
+I would like to express my deep gratitude to my supervisor, Prof. Guide Name, for their patient guidance, enthusiastic encouragement, and useful critiques of this research work. I would also like to thank my family and friends for their support.
+
+% Abstract
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+The increasing rate of student dropouts in higher education institutions poses a significant challenge... This project proposes a robust machine learning framework leveraging Random Forest and XGBoost... We achieve an accuracy of 77\%... Explainability is provided via SHAP (SHapley Additive exPlanations)...
+
+% Tables of Contents
+\tableofcontents
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+
+\clearpage
+\pagenumbering{arabic}
+
+% -----------------------------------------
+% CHAPTER 1: INTRODUCTION
+% -----------------------------------------
+\chapter{Introduction}
+\section{Background and Motivation}
+Higher education institutions worldwide are currently facing a critical challenge regarding student retention...
+(Referencing full content generated in Chapter 1)
+
+\section{Historical Context of Educational Data Mining}
+Educational Data Mining (EDM) has evolved significantly over the past two decades...
+\begin{itemize}
+    \item \textbf{Phase 1 (1995-2005):} Early EDM focused primarily on simple statistical analysis...
+    \item \textbf{Phase 2 (2005-2015):} Integration of predictive modeling (Logistic Regression, SVM)...
+    \item \textbf{Phase 3 (2015-Present):} Deep Learning, Ensembles, and Explainable AI (XAI)...
+\end{itemize}
+
+\section{Problem Definition}
+The core problem addressed is the binary and multi-class classification problem of predicting student academic outcomes. Given dataset $\mathcal{D}$ consisting of $N$ student records...
+\begin{equation}
+    y_i \in \{\text{Dropout, Enrolled, Graduate}\}
+\end{equation}
+
+\section{Objectives of the Study}
+\begin{enumerate}
+    \item Develop a robust ML pipeline...
+    \item Implement and compare ensemble learning algorithms...
+    \item Address class imbalance using SMOTE...
+    \item Integrate Explainable AI (SHAP)...
+    \item Deploy as a production-grade web app (FastAPI + React)...
+\end{enumerate}
+
+\section{Societal Impact}
+\begin{itemize}
+    \item \textbf{Optimization of Educational Resources}...
+    \item \textbf{Economic Efficiency}...
+    \item \textbf{Student Mental Health}...
+\end{itemize}
+
+\section{Scope and Limitations}
+\subsection{Scope}
+The scope relates to prediction based on structured tabular data, encompassing the pipeline from ingestion to dashboard.
+\subsection{Limitations}
+Data staticity, generalizability across different educational systems, and causality vs correlation issues.
+
+\section{Organization of the Report}
+The report is organized into 7 chapters and appendices...
+
+% -----------------------------------------
+% CHAPTER 2: LITERATURE REVIEW
+% -----------------------------------------
+\chapter{Literature Review}
+\section{Overview of Student Retention Analysis}
+Retention analysis, based on Tinto's Student Integration Model (1975) and Bean's Model (1980)...
+
+\section{Comparative Analysis}
+\begin{table}[H]
+\centering
+\caption{Comparative Analysis of Existing Systems}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Author} & \textbf{Method} & \textbf{Findings} & \textbf{Limitations} \\
+\hline
+Manrique (2019) & LogReg & High school grades predictive & Low accuracy (65\%) \\
+Sarker (2020) & ANN & High accuracy (85\%) & Black box \\
+Nagy (2018) & C4.5 & Interpretable rules & Overfitting \\
+\textbf{Proposed} & \textbf{RF+SHAP} & \textbf{High accuracy (77\%) + Explainable} & \textbf{Computational cost} \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+\section{Machine Learning in Education}
+\subsection{Random Forests}
+$\hat{y} = \text{mode} \{ T_1(x), ..., T_K(x) \}$
+\subsection{XGBoost}
+$\mathcal{L}^{(t)} = \sum l(y_i, \hat{y}_i^{(t-1)} + f_t(x_i)) + \Omega(f_t)$
+
+\section{Explainable AI (XAI)}
+\subsection{SHAP}
+$\phi_j(val) = \sum_{S \subseteq \{x_1,...,x_p\} \setminus \{x_j\}} \frac{|S|!(p-|S|-1)!}{p!} (val(S \cup \{x_j\}) - val(S))$
+
+% -----------------------------------------
+% CHAPTER 3: SYSTEM ANALYSIS
+% -----------------------------------------
+\chapter{Problem Statement and System Model}
+\section{Formal Problem Statement}
+Objective: Construct predictive system learning mapping $f: \mathcal{X} \rightarrow \mathcal{Y}$.
+\subsection{Mathematical Formulation}
+$\mathcal{X} = \mathcal{X}_{demo} \cup \mathcal{X}_{academic} \cup \mathcal{X}_{socio}$.
+Loss $J(\theta) = -\frac{1}{N} \sum \sum \mathbb{I}(y=c) \log(h_{\theta}(x)_c)$.
+
+\section{Proposed System Architecture}
+\subsection{Data Pipeline}
+Ingestion $\rightarrow$ Processing (Encoding, Scaling, SMOTE).
+\subsection{Model Training}
+Candidates $\mathcal{M} = \{LR, SVM, RF, XGB\}$. Hyperparameter optimization via RandomizedSearchCV.
+\subsection{Deployment}
+Backend: FastAPI (microservice). Frontend: React (SPA).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/system_architecture.png} % Using actual image
+    \caption{System Architecture Diagram}
+\end{figure}
+
+\section{Requirements}
+FRs: Ingestion, Prediction, Explanation, Validation.
+NFRs: Latency <200ms, Stateless Scalability.
+
+% -----------------------------------------
+% CHAPTER 4: METHODOLOGY
+% -----------------------------------------
+\chapter{Proposed Methodology}
+\section{Data Preprocessing}
+\begin{algorithm}[H]
+\caption{Adaptive Preprocessing}
+\begin{algorithmic}[1]
+\State Initialize ColumnTransformer
+\State Impute Numeric (Mean) + Scale (Standard)
+\State Impute Categorical (Unknown) + Encode (OneHot)
+\State Target Encode
+\end{algorithmic}
+\end{algorithm}
+
+\section{Class Imbalance (SMOTE)}
+\begin{algorithm}[H]
+\caption{SMOTE}
+\begin{algorithmic}[1]
+\For{each sample in minority class}
+    \State Find K nearest neighbors
+    \State Interpolate new synthetic points
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\section{Model Development}
+\begin{algorithm}[H]
+\caption{Training Loop}
+\begin{algorithmic}[1]
+\State Define Base Model (RandomForest)
+\State Define Hyperparameter Grid
+\State Run RandomizedSearchCV (CV=5)
+\State Select Best Estimator
+\State Validate on Test Set
+\end{algorithmic}
+\end{algorithm}
+
+\section{Explainability Engine}
+SHAP values calculated for top K features on demand.
+
+% -----------------------------------------
+% CHAPTER 5: IMPLEMENTATION
+% -----------------------------------------
+\chapter{Implementation Details}
+\section{Hardware/Software}
+Intel Core i7, 16GB RAM, RTX 3060.
+Stack: Python 3.10, Scikit-Learn 1.3, XGBoost 2.0, FastAPI, React 18, Vite.
+
+\section{Backend (FastAPI)}
+\lstinline|api/services/prediction.py|: Pure Python service.
+Startup event loads artifacts. Pydantic schemas enforce validation.
+
+\section{Frontend (React)}
+Dynamic forms fetching schema from \lstinline|/api/schema|.
+
+\section{Key Modules}
+\subsection{Schema Locking}
+\begin{lstlisting}[language=Python]
+def validate_consistency(self):
+    if self.model.n_features_in_ != len(self.feature_names):
+        raise ValueError("Consistency Error")
+\end{lstlisting}
+
+% -----------------------------------------
+% CHAPTER 6: RESULTS
+% -----------------------------------------
+\chapter{Results and Performance Analysis}
+\section{Metrics}
+Accuracy, Precision, Recall, F1-Score.
+
+\section{Experimental Results}
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Algo} & \textbf{Accuracy} & \textbf{F1} \\
+\hline
+LogReg & 72.4 & 0.71 \\
+XGBoost & 76.2 & 0.76 \\
+\textbf{Random Forest} & \textbf{77.3} & \textbf{0.77} \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Feature Importance}
+Top features: Curricular units 2nd sem (approved), Tuition fees up to date.
+
+% -----------------------------------------
+% CHAPTER 7: CONCLUSION
+% -----------------------------------------
+\chapter{Conclusion and Future Scope}
+\section{Conclusion}
+Developed end-to-end system with 77.3\% accuracy. Multi-class prediction + Explanation.
+\section{Contributions}
+Preprocessing pipeline, optimized RF model, full-stack app, dynamic schema.
+\section{Future Scope}
+Longitudinal data, LMS integration, Causal inference.
+
+% -----------------------------------------
+% REFERENCES & APPENDICES
+% -----------------------------------------
+\bibliographystyle{ieeetr}
+\bibliography{references}
+
+\appendix
+\chapter{Cost Estimations}
+AWS Cloud Cost: \$60/month (EC2 + RDS + S3).
+
+\chapter{User Manual}
+1. Clone repo. 2. Install dependencies. 3. Run uvicorn. 4. Run npm dev.
+
+\chapter{Glossary}
+EDM, SHAP, SMOTE, API, SPA.
+
+\end{document}

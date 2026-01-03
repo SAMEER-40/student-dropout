@@ -1,0 +1,21 @@
+\chapter{Conclusion and Future Scope}
+
+\section{Conclusion}
+In this project, we successfully developed and deployed an end-to-end Student Dropout Prediction System. By leveraging ensemble machine learning techniques and addressing class imbalance with SMOTE, we achieved a predictive accuracy of \textbf{77.3\%}, outperforming baseline models. The integration of SHAP values addresses the critical "black-box" issue, providing actionable explanations for each prediction. The microservices architecture ensures the system is scalable and maintainable. This tool serves as a powerful decision support system for educational institutions to proactively identify and assist at-risk students.
+
+\section{Contributions}
+The key contributions of this work are:
+\begin{enumerate}
+    \item A comprehensive pre-processing pipeline that handles missing data and balances classes effectively.
+    \item A high-performance predictive model using Random Forest optimized via randomized search.
+    \item A full-stack web application (FastAPI + React) that allows non-technical users to interact with the model.
+    \item A dynamic schema system that prevents frontend-backend drift, enhancing system reliability.
+\end{enumerate}
+
+\section{Future Enhancements}
+Future work will focus on:
+\begin{itemize}
+    \item \textbf{Longitudinal Data:} Incorporating time-series data (e.g., weekly attendance) to improve prediction accuracy mid-semester.
+    \item \textbf{Integration with LMS:} Building plugins for Moodle or Canvas to pull student data automatically.
+    \item \textbf{Causal Inference:} Moving beyond correlation to establish causal relationships for more robust intervention strategies.
+\end{itemize}

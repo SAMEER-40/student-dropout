@@ -1,0 +1,108 @@
+\chapter{Implementation Details}
+
+\section{System Development Environment}
+The implementation of the \textit{Student Dropout Prediction System} was conducted in a controlled environment to ensure reproducibility. The development lifecycle made use of high-performance computing resources for model training and a standardized software stack for deployment.
+
+\subsection{Hardware Specifications}
+The training of ensemble models, particularly with techniques like SMOTE and extensive hyperparameter tuning, is computationally intensive. The following hardware configuration was utilized:
+\begin{table}[H]
+    \centering
+    \caption{Hardware Configuration for Model Training}
+    \label{tab:hardware}
+    \begin{tabular}{|l|l|p{7cm}|}
+    \hline
+    \textbf{Component} & \textbf{Specification} & \textbf{Justification} \\
+    \hline
+    Central Processing Unit & Intel Core i7-12700H & 14 Cores / 20 Threads allow for parallel execution of decision trees (n\_jobs=-1). \\
+    \hline
+    Random Access Memory & 16 GB DDR4 3200MHz & Sufficient to hold the 4424x36 dataset and intermediate SMOTE matrices in memory. \\
+    \hline
+    Graphics Processing Unit & NVIDIA RTX 3060 (6GB) & Accelerated XGBoost training using CUDA cores. \\
+    \hline
+    Storage & 1 TB NVMe SSD & High I/O throughput for reading raw CSVs and serializing large model artifacts (approx. 500MB). \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\subsection{Software Technology Stack}
+The selection of the technology stack was driven by the requirements for Scalability and Reproducibility.
+\begin{enumerate}
+    \item \textbf{Python 3.10:} Selected as the core language for its dominance in the Data Science ecosystem and rich library support.
+    \item \textbf{Scikit-Learn (v1.3.2):} Used for the implementation of Random Forest, Preprocessing pipelines, and Metrics computation.
+    \item \textbf{XGBoost (v2.0.3):} Utilized for the Gradient Boosting implementation.
+    \item \textbf{FastAPI (v0.109.0):} A modern, high-performance web framework for building APIs with Python 3.6+ types. It is chosen over Flask due to its native asynchronous support (ASGI) and automatic Swagger UI generation.
+    \item \textbf{React (v18.2):} A JavaScript library for building user interfaces, allowing for a responsive, component-based frontend design.
+    \item \textbf{Imbalanced-learn:} A specific library for handling the SMOTE implementation.
+\end{enumerate}
+
+\section{Backend Microservice Implementation}
+The backend logic is encapsulated in the \texttt{api/} directory. It follows a layered architecture pattern: \textit{Router Layer} $\rightarrow$ \textit{Service Layer} $\rightarrow$ \textit{Data Layer}.
+
+\subsection{Artifact Integrity and Loading}
+A critical challenge in ML deployment is maintaining consistency between the environment where the model was trained and where it is served. We implemented a robust Artifact Loading mechanism in \texttt{src/utils.py}.
+\begin{lstlisting}[language=Python, caption=Robust Model Artifact Loading]
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    On Startup: Load Learning Artifacts into Memory.
+    On Shutdown: Clean up resources.
+    """
+    global model_artifacts
+    try:
+        # Load Model, Preprocessor, and Encoder
+        model = joblib.load(MODEL_PATH)
+        preprocessor = joblib.load(PREPROCESSOR_PATH)
+        encoder = joblib.load(ENCODER_PATH)
+        
+        # Verify schema consistency
+        if model.n_features_in_ != expected_features:
+            raise ValueError("Artifact Mismatch Error")
+            
+        model_artifacts = (model, preprocessor, encoder)
+        yield
+    except Exception as e:
+        logger.critical(f"Failed to load ML artifacts: {e}")
+        raise e
+\end{lstlisting}
+
+\subsection{Prediction Service Implementation}
+The core business logic is isolated in \texttt{api/services/prediction.py}. This module is "Pure Python," meaning it has no dependency on the HTTP framework, making it easily testable. It handles the lazy initialization of the expensive SHAP explainer.
+\begin{lstlisting}[language=Python, caption=Prediction Service with Lazy Loading]
+class PredictionService:
+    def predict(self, input_data: pd.DataFrame, explain: bool = False):
+        # 1. Preprocess Raw Input
+        X_transformed = self.preprocessor.transform(input_data)
+        
+        # 2. Get Prediction & Probabilities
+        prediction_idx = self.model.predict(X_transformed)[0]
+        probs = self.model.predict_proba(X_transformed)[0]
+        
+        # 3. Conditional Explanation (Optimized)
+        explanation = None
+        if explain:
+            if self.shap_explainer is None:
+                self._initialize_explainer() # Expensive op, done once
+            
+            # Compute local SHAP values for this instance
+            shap_values = self.shap_explainer.shap_values(X_transformed)
+            explanation = self._format_explanation(shap_values)
+            
+        return PredictionResult(
+            class_label=self.encoder.inverse_transform([prediction_idx])[0],
+            confidence=float(np.max(probs)),
+            explanation=explanation
+        )
+\end{lstlisting}
+
+\section{Frontend Implementation}
+The frontend is a Single Page Application (SPA) initialized with Vite. It communicates with the backend via RESTful APIs.
+
+\subsection{Dynamic Schema Adaptation}
+To prevent frontend-backend coupling, the UI does not hardcode the form fields. Instead, it queries the \texttt{GET /api/schema} endpoint on component mount. This endpoint returns the list of active features the model expects, along with their types (categorical/numerical) and valid ranges. The React component \texttt{StudentForm.jsx} then iterates over this schema to render the corresponding input elements dynamically. This ensures that if the model is retrained with new features, the UI updates automatically without code changes.
+
+\section{Testing and Validation}
+Quality assurance was enforced through:
+\begin{itemize}
+    \item \textbf{Unit Tests:} Testing individual functions (e.g., preprocessing logic) using `pytest`.
+    \item \textbf{Golden Invariant Tests:} A suite of regression tests in `tests/test_golden.py` that verifies that specific known inputs always produce the exact same output, ensuring no silent drift in model behavior.
+\end{itemize}
